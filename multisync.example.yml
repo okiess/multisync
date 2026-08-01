@@ -1,2 +1,8 @@
 dirs:
   - ~/projects/example
+  - ~/dotfiles
+
+rsync:
+  - source: ~/Documents/notes
+    target: user@server:/backup/notes
+    args: "-avz --delete"

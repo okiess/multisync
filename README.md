@@ -1,6 +1,6 @@
 # multisync
 
-A small Rust CLI tool to pull multiple git repositories sequentially.
+A small Rust CLI tool to sync git repositories and run rsync jobs sequentially.
 
 ## Installation
 
@@ -17,9 +17,16 @@ Create a config file at `~/.config/multisync.yml`:
 ```yaml
 dirs:
   - ~/projects/foo
-  - ~/projects/bar
-  - ~/work/baz
+  - ~/dotfiles
+
+rsync:
+  - source: ~/Documents/notes
+    target: user@server:/backup/notes
+    args: "-avz --delete"
 ```
+
+- `dirs`: list of git repositories to pull
+- `rsync`: list of rsync jobs to run
 
 Tilde (`~`) is expanded to your home directory.
 
@@ -43,5 +50,11 @@ multisync --quiet
 
 ## Exit codes
 
-- `0`: all repositories were pulled successfully
-- `1`: at least one pull failed or no directories were configured
+- `0`: all sync jobs succeeded
+- `1`: at least one sync job failed or nothing was configured
+
+## Notes
+
+- Git repositories are pulled with `git pull --ff-only`.
+- Failed jobs are reported, but `multisync` continues with the remaining jobs.
+- `rsync` must be installed on your system to use the `rsync` section.

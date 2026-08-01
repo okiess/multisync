@@ -4,7 +4,19 @@ use std::path::PathBuf;
 
 #[derive(Debug, Deserialize)]
 pub struct Config {
+    #[serde(default)]
     pub dirs: Vec<String>,
+
+    #[serde(default)]
+    pub rsync: Vec<RsyncJob>,
+}
+
+#[derive(Debug, Deserialize)]
+pub struct RsyncJob {
+    pub source: String,
+    pub target: String,
+    #[serde(default)]
+    pub args: Option<String>,
 }
 
 pub fn default_config_path() -> Result<PathBuf> {

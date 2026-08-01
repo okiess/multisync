@@ -7,7 +7,7 @@ mod sync;
 
 #[derive(Parser, Debug)]
 #[command(name = "multisync")]
-#[command(about = "Pull multiple git repositories sequentially.")]
+#[command(about = "Sync git repositories and run rsync jobs sequentially.")]
 struct Cli {
     /// Path to the configuration file.
     #[arg(short, long, value_name = "FILE")]
@@ -28,12 +28,13 @@ fn main() -> Result<()> {
 
     let cfg = config::load(&config_path)?;
 
-    if cfg.dirs.is_empty() {
-        eprintln!("No directories configured in {config_path:?}");
+    if cfg.dirs.is_empty() && cfg.rsync.is_empty() {
+        eprintln!("No directories or rsync jobs configured in {config_path:?}");
         std::process::exit(1);
     }
 
     let mut failed = 0;
+
     for dir in &cfg.dirs {
         match sync::pull(dir, cli.quiet) {
             Ok(result) => {
@@ -43,13 +44,27 @@ fn main() -> Result<()> {
             }
             Err(err) => {
                 failed += 1;
-                eprintln!("[FAIL] {dir:?}: {err:#}");
+                eprintln!("[FAIL] git {dir:?}: {err:#}");
+            }
+        }
+    }
+
+    for job in &cfg.rsync {
+        match sync::run_rsync(job, cli.quiet) {
+            Ok(result) => {
+                if !cli.quiet {
+                    println!("{result}");
+                }
+            }
+            Err(err) => {
+                failed += 1;
+                eprintln!("[FAIL] rsync {} -> {}: {err:#}", job.source, job.target);
             }
         }
     }
 
     if failed > 0 {
-        eprintln!("{failed} repository pull(s) failed.");
+        eprintln!("{failed} sync job(s) failed.");
         std::process::exit(1);
     }
 

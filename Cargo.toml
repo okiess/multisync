@@ -7,11 +7,11 @@ description = "A small CLI tool to pull multiple git repositories sequentially."
 license = "MIT"
 
 [dependencies]
+serde = { version = "1.0", features = ["derive"] }
 anyhow = "1.0"
 clap = { version = "4.5", features = ["derive"] }
 dirs = "5.0"
-serde = { version = "1.0", features = ["derive"] }
-serde_yaml = "0.9"
+yaml_serde = "0.10"
 shellexpand = "3.1"
 
 [profile.release]

@@ -28,6 +28,8 @@ fn main() -> Result<()> {
 
     let cfg = config::load(&config_path)?;
 
+    sync::check_prerequisites(&cfg)?;
+
     if cfg.dirs.is_empty() && cfg.rsync.is_empty() {
         eprintln!("No directories or rsync jobs configured in {config_path:?}");
         std::process::exit(1);

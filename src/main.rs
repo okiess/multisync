@@ -7,7 +7,7 @@ mod sync;
 
 #[derive(Parser, Debug)]
 #[command(name = "multisync")]
-#[command(about = "Sync git repositories and run rsync jobs sequentially.")]
+#[command(version)]
 struct Cli {
     /// Path to the configuration file.
     #[arg(short, long, value_name = "FILE")]
